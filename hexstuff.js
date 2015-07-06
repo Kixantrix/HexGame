@@ -145,21 +145,23 @@
 
   // Returns a set of all points of same color provided connected to the hex
   function findAdjacentHexes(q, r, grid) {
+    /*
     var fringe = {};
     var known  = {};
     var adjacentHexes = {};
     var firstPoint = new hexPoint(q,r);
     fringe[firstPoint.toString()] = firstPoint;
+    */
 
-    /*
+    
     var fringe = new Set();                   // Hexes to be examined
     var known  = new Set();                   // Hexes already examined
     var adjacentHexes = new Set();            // Contents of set
     
     console.log("current index" + q + " " + r);
-    */
+    
     var color = grid[q][r].color;             // Color we are looking for
-    //fringe.add(factory.make(q,r));            // Start with node passed in.
+    fringe.add(factory.make(q,r));            // Start with node passed in.
     
     while(fringe.size != 0) {                 // While fringe is not empty
       for(let item of fringe) {               // Iterate through fringe

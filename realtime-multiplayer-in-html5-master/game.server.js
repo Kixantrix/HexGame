@@ -105,7 +105,8 @@
                 id : UUID(),                //generate a new id for the game
                 player_host:player,         //so we know who initiated the game
                 player_client:null,         //nobody else joined yet, since its new
-                player_count:1              //for simple checking of state
+                player_count:1,             //for simple checking of state
+                full_player_count:2         //Number of players for which lobby is full
             };
 
             //Store it in the list of game
@@ -220,7 +221,7 @@
                 var game_instance = this.games[gameid];
 
                     //If the game is a player short
-                if(game_instance.player_count < 2) {
+                if(game_instance.player_count < game_instance.full_player_count) {
 
                         //someone wants us to join!
                     joined_a_game = true;

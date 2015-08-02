@@ -214,21 +214,14 @@ game_core.prototype.v_lerp = function(v,tv,t) { return { x: this.lerp(v.x, tv.x,
         this.info_color = 'rgba(255,255,255,0.1)';
         this.id = '';
 
-            //These are used in moving us around later
-        this.old_state = {pos:{x:0,y:0}};
-        this.cur_state = {pos:{x:0,y:0}};
+            // these are used for state dependent information, including
+            // Number of hexes to place and moves to make.
+        this.old_state = {info:{hexes:0,moves:0,grid:[]}};
+        this.cur_state = {info:{hexes:0,moves:0,grid:[]}};
         this.state_time = new Date().getTime();
 
             //Our local history of inputs
         this.inputs = [];
-
-            //The world bounds we are confined to
-        this.pos_limits = {
-            x_min: this.size.hx,
-            x_max: this.game.world.width - this.size.hx,
-            y_min: this.size.hy,
-            y_max: this.game.world.height - this.size.hy
-        };
 
             //The 'host' of a game gets created with a player instance since
             //the server already knows who they are. If the server starts a game
@@ -241,6 +234,7 @@ game_core.prototype.v_lerp = function(v,tv,t) { return { x: this.lerp(v.x, tv.x,
 
     }; //game_player.constructor
   
+    /* Not Needed for HexGame
     game_player.prototype.draw = function(){
 
             //Set the color for this player
@@ -254,6 +248,7 @@ game_core.prototype.v_lerp = function(v,tv,t) { return { x: this.lerp(v.x, tv.x,
         game.ctx.fillText(this.state, this.pos.x+10, this.pos.y + 4);
     
     }; //game_player.draw
+    */
 
 /*
 

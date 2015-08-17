@@ -113,7 +113,7 @@
           // Find all adjacent Hexes
           var adjacentHexes = findAdjacentHexes(hexSelected.q, hexSelected.r, grid);
           // Try to find a path.
-          var path =  new Path(hexSelected, adjacentHexes);
+          var path =  new Path(hexSelected, hexClicked, adjacentHexes, grid);
           if(path.exists && path.cost <= moves) {
             var currentSelected = grid[hexSelected.q][hexSelected.r];
             moveHexes(hexSelected.q, hexSelected.r, hexClicked.q, hexClicked.r, grid, currentSelected.color, adjacentHexes);
@@ -198,13 +198,32 @@
     }
   }
 
+  // An object representing 
+  function Path(hexSelected, hexClicked, adjacentHexes, grid) {
+    this.hexSelected = hexSelected;
+    this.hexClicked = hexClicked;
+    this.adjacentHexes = adjacentHexes;
+    this.grid = grid;
 
-  function Path(hexSelected, adjacentHexes) {
-    this.exists = true;
-    this.cost = 0;
+    result = findPath(0,0)
+
+    this.findPath = function() {
+
+    }
+
+    // Returns true if the hexes can move to the new displacement from their original position
+    this.canMoveTo = function (newPosition, adjacentHexes) {
+      for(let item of adjacentHexes) {
+        // Check space exists and is open
+        if(!(this.grid[item.q + newPosition.q] && this.grid[item.q + newPosition.q][item.r + newPosition.r]
+          && this.grid[item.q + newPosition.q][item.r + newPosition.r].color == "white")) {
+          return false
+        }
+      }
+    }
   }
 
-  // Camera for game
+  // Camera for game, used to transform draw calls for different perspectives of the map
   function camera(x, y, z) {
     this.x = x;
     this.y = y;

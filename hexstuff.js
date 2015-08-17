@@ -168,11 +168,9 @@
         var currentHex = grid[item.q][item.r];
         fringe.delete(item);                  // Remove item from fringe
         known.add(item);                      // Add item to known set
-        //console.log(currentHex); 
         if(currentHex.color == color) {       // Add same color to adjacent set
           adjacentHexes.add(item);            
-          //console.log(item);
-          var neighbors = getNeighbors(item);
+          var neighbors = getNeighbors(item, grid);
           // Add each neighbors which is not already known.
           for(var i = 0; i < neighbors.length; i++) {
             if(!known.has(neighbors[i])) {  
@@ -189,12 +187,12 @@
   }
 
   // Returns an array of Hexpoints corresponding to all hexes which
-  function getNeighbors(centerHex) {     
+  function getNeighbors(centerHex, grid) {     
     var neighbors = [];
     //console.log(centerHex);     // /Iterate through all size potential neighbors and test if they are within grid.     
     for(var i = 0; i < 6; i++) {
       //console.log(centerHex.q + SIDEQ[i] + centerHex.r + SIDER[i]);
-      if(Math.abs(centerHex.q + SIDEQ[i] + centerHex.r + SIDER[i]) <= 2 * QDIM) {
+      if(grid[centerHex.q + SIDEQ[i]] && grid[centerHex.q + SIDEQ[i]][centerHex.r + SIDER[i]]) {
         neighbors.push(factory.make(centerHex.q + SIDEQ[i], centerHex.r + SIDER[i]));
       }  
     }
@@ -354,30 +352,18 @@
 
   // Dynamically resizing factory with which we mage hexPoints
   function hexFactory() {
-    
-    this.points = [];
-    for(var i = 0; i < 4 * QDIM; i++) {
-      this.points[i] = [];
-    }
+    this.points = {}
 
     // Resizing points array as necessary
     this.make = function(q,r) {
-      /*
-      // Resize to at least 1 passed in
-      for(var i = this.points.length; i < q + this.points.length; i++) {
-        this.points[i] = [];
-      }
-      */
+
       // create new point if it doesn't exist
-      if(q <= 2 * QDIM && r <= 2 * RDIM && q > -2 * QDIM && r > -2 * RDIM ) {
-        if(this.points[q +2 *  QDIM][r + 2 * RDIM] == null) {
-          this.points[q + 2 * QDIM][r + 2 * RDIM] = new hexPoint(q, r);
-        }
-        return this.points[q + 2 * QDIM][r + 2 * RDIM];
-      } else {
-        return new hexPoint(q, r);
-      }   
+      var property = q + " " + r;
+      if(!this.points.hasOwnProperty(property)) {
+        this.points[property] = new hexPoint(q, r)
+        return this.points[property];
+      }
+      return this.points[property]  
     }
-    
   }
 }()); 

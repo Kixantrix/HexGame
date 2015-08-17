@@ -135,30 +135,19 @@
   function moveHexes(centerQ, centerR, newQ, newR, grid, color, adjacentHexes) {
     var rDif = newR - centerR;           // Amount of offset to add to each r coordinate.
     var qDif = newQ - centerQ;           // Amount of offset to add to each q coordinate.
-    console.log(qDif + " " + rDif);
     for(let coord of adjacentHexes) {
-      console.log(coord);
-      grid[coord.q][coord.r].color = "white";
-      grid[coord.q + qDif + QDIM][coord.r + rDif + RDIM].color = color;
+      if(grid[coord.q + qDif + QDIM] && grid[coord.q + qDif + QDIM][coord.r + rDif + RDIM]) {
+        grid[coord.q + qDif + QDIM][coord.r + rDif + RDIM].color = color;
+        grid[coord.q][coord.r].color = "white";
+      }
     } 
   }
 
   // Returns a set of all points of same color provided connected to the hex
   function findAdjacentHexes(q, r, grid) {
-    /*
-    var fringe = {};
-    var known  = {};
-    var adjacentHexes = {};
-    var firstPoint = new hexPoint(q,r);
-    fringe[firstPoint.toString()] = firstPoint;
-    */
-
-    
     var fringe = new Set();                   // Hexes to be examined
     var known  = new Set();                   // Hexes already examined
     var adjacentHexes = new Set();            // Contents of set
-    
-    console.log("current index" + q + " " + r);
     
     var color = grid[q][r].color;             // Color we are looking for
     fringe.add(factory.make(q,r));            // Start with node passed in.
@@ -174,7 +163,6 @@
           // Add each neighbors which is not already known.
           for(var i = 0; i < neighbors.length; i++) {
             if(!known.has(neighbors[i])) {  
-              console.log(known.size);
               fringe.add(neighbors[i]);
             }
           } 
@@ -196,7 +184,6 @@
         neighbors.push(factory.make(centerHex.q + SIDEQ[i], centerHex.r + SIDER[i]));
       }  
     }
-    console.log(neighbors);
     return neighbors;
     
   }

@@ -191,37 +191,62 @@
   // Returns attack of hex equal to nunmber of hexes fo the same color radiating from the first 
   // Hexpoint in the hexPoint direction passed in.
   function getAttack(q, r, direction, grid, color) {
-    if((hex[q][r] && hex[q][r].color == color)) {
+    if((hex[q] && hex[q][r] && hex[q][r].color == color)) {
       return 1 + getAttack(q + direction.q , r + direction.r, direction, grid, color);  
     } else {
       return 0;
     }
   }
 
-  // An object representing 
+  // Returns the distance between two hexes
+  function hexDistance(a, b) {
+    return (Math.abs(a.q - b.q) 
+      + Math.abs(a.q + a.r - b.q - b.r)
+      + Math.abs(a.r - b.r)) / 2;
+  }
+
+  // An object representing a path from an original spot to a new spot
   function Path(hexSelected, hexClicked, adjacentHexes, grid) {
+    // Parameters, used in fields to retain information for re-examination.
     this.hexSelected = hexSelected;
     this.hexClicked = hexClicked;
     this.adjacentHexes = adjacentHexes;
     this.grid = grid;
 
-    result = findPath(0,0)
+    // Find path using distance between start and end as heuristic
+    function findPath() {
+      // Coordinates already examined
+      var know = new Set();
+      // Coordinates to be examined
+      var fringe = new Set();
 
-    this.findPath = function() {
+      // Map of all points by cost
+      var costMap = {};
+      var 
+    }
 
+    function findLowest(map) {
+      var lowest = null;
+      for(let item in map.keys()) {
+        if(!lowest || item < lowest) {
+          lowest = item;
+        }
+      }
+      return map[lowest];
     }
 
     // Returns true if the hexes can move to the new displacement from their original position
-    this.canMoveTo = function (newPosition, adjacentHexes) {
-      for(let item of adjacentHexes) {
+    function canMoveTo(newPosition) {
+      for(let item of this.adjacentHexes) {
         // Check space exists and is open
         if(!(this.grid[item.q + newPosition.q] && this.grid[item.q + newPosition.q][item.r + newPosition.r]
           && this.grid[item.q + newPosition.q][item.r + newPosition.r].color == "white")) {
-          return false
-        }
+          return false;
       }
+      return true;
     }
   }
+}
 
   // Camera for game, used to transform draw calls for different perspectives of the map
   function camera(x, y, z) {

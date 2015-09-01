@@ -43,22 +43,34 @@
       }
     }
 
+
+    var frequency = 5;
+    // Draw Loop
+    setInterval(function() {
+      count = countUnits();
+      updateMoves(count)
+      updateUnitsToPlace(count);
+    }, 1000 * frequency);
+
+
     var FPS = 30;
-    // Game Loop
+    // Draw Loop
     setInterval(function() {
       update();
-      draw()
+      draw();
     }, 1000/FPS);
-
+
     // Updates things...
     function update() {
       canvas.width = window.innerWidth; 
       canvas.height = window.innerHeight;    
       mapCamera.moveY(window.innerHeight - 200);
+      unitsToPlace ++
     }
 
     // Draw things
     function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawGrid(grid, ctx, gameCamera);
       drawMiniMap();
     }
@@ -206,41 +218,83 @@
   }
 
   // An object representing a path from an original spot to a new spot
-  function Path(hexSelected, hexClicked, adjacentHexes, grid) {
+  function Path(begin, end, adjacentHexes, grid) {
     // Parameters, used in fields to retain information for re-examination.
-    this.hexSelected = hexSelected;
-    this.hexClicked = hexClicked;
+    this.begin = begin;
+    this.end = end;
     this.adjacentHexes = adjacentHexes;
     this.grid = grid;
+    this.path = []
+    this.cost = 0;
+    this.exists = false;
+
+    this.findPath();
 
     // Find path using distance between start and end as heuristic
-    function findPath() {
+    this.findPath = function() {
       // Coordinates already examined
-      var know = new Set();
+      var known = new Set();
       // Coordinates to be examined
       var fringe = new Set();
-
       // Map of all points by cost
       var costMap = {};
-      var 
+      // First Item is 0 cost
+      costMap[this.begin.toString()] = 0;
+      // Start is start.
+      var cameFrom = {};
+      fringe.add(this.begin);
+      var currentHex = null;
+      // Keep going while we haven't found end and there are more in fringe
+      while(fringe.size > 0 &&  currentHex != this.end) {
+        currentHex = findLowest(fringe, costMap);
+        fringe.remove(currentHex);
+        known.add(currentHex);
+        var neighbors = getNeighbors(currentHex, this.grid)
+        // Add neighbors to fringe
+        for(let neighbor in neighbors) {
+          // Checked if neighbor seen and if we can move there
+          if(!known.has(neightbor) && canMoveTo(neighbor)) {
+            fringe.add(neighbor);
+            cameFrom[neighbor.toString()] = currentHex;
+            costMap[neighbor.toString()] = costMap[currentHex.toString()] + 1;
+          }
+        }
+
+      }
+      if(currentHex == this.end) {
+        this.cost = costMap[currentHex.toString()];
+        this.exists = true;
+        place = currentHex
+        backwardsPath = []
+        while(cameFrom.hasOwnProperty(place.toString())) {
+          this.Backwardspath.add(place)
+          place = cameFrom(place.toString());
+          // Store and flip
+          this.path = backwardsPath.reverse();
+        }
+      }
     }
 
-    function findLowest(map) {
+    // Returns lowest in fringe
+    this.findLowest = function(fringe, costMap) {
       var lowest = null;
-      for(let item in map.keys()) {
-        if(!lowest || item < lowest) {
+      for(let item in fringe) {
+        if(!lowest || costMap[item.toString()] + hexDistance(item, this.end) 
+          < costMap[lowest.toString()] + hexDistance(hex, this.end)) {
           lowest = item;
         }
       }
       return map[lowest];
     }
 
-    // Returns true if the hexes can move to the new displacement from their original position
-    function canMoveTo(newPosition) {
+    // Returns true if the hexes can move to the new position from their original position
+    this.canMoveTo = function(newPosition) {
+      qDisplacement = this.begin.q - newPosition.q;
+      rDisplacement = this.begin.r - newPosition.r;
       for(let item of this.adjacentHexes) {
         // Check space exists and is open
-        if(!(this.grid[item.q + newPosition.q] && this.grid[item.q + newPosition.q][item.r + newPosition.r]
-          && this.grid[item.q + newPosition.q][item.r + newPosition.r].color == "white")) {
+        if(!(this.grid[item.q + qDisplacement] && this.grid[item.q + qDisplacement][item.r + rDisplacement]
+          && this.grid[item.q + qDisplacement][item.r + rDisplacement].color == "white")) {
           return false;
       }
       return true;

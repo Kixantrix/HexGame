@@ -1,4 +1,5 @@
 "use strict";
+// Requires
 var Point = require('./point')['Point'];
 
 var DEFAULT_DEPTH = 1;
@@ -12,57 +13,57 @@ function Camera(x, y, z, canvas) {
 
     // Applies camera transformations from x y positions to camera
     // Positions
-    this.transform = function(x, y) {
+    Camera.prototype.transform = function(x, y) {
     	return [x * this.getZScale() + this.x, 
     		y * this.getZScale() + this.y];
     }
 
     // Retreives original coordinates before transformation 
-    this.antiTransform = function(x, y) {
+    Camera.prototype.antiTransform = function(x, y) {
     	return new Point((x - this.x) / this.getZScale(), (y - this.y) / this.getZScale());
     }  
 
-    this.applyTransform = function(ctx) {
+    Camera.prototype.applyTransform = function(ctx) {
         var scale = this.getZScale();
         ctx.translate(this.x, this.y);
         ctx.scale(scale, scale);
     }
 
     // Returns a scaling factor for size of items on 2d plane based on z index.
-    this.getZScale = function() {
+    Camera.prototype.getZScale = function() {
     	return 1.0 * DEFAULT_DEPTH / this.z;
     }
 
     // Changes X position
-    this.moveX = function(x) {
+    Camera.prototype.moveX = function(x) {
     	this.x = x;
     }
 
     // Changes Y position
-    this.moveY = function(y) {
+    Camera.prototype.moveY = function(y) {
     	this.y = y;
     }
 
     // Changes Z position
-    this.moveZ = function(z) {
+    Camera.prototype.moveZ = function(z) {
     	this.z = z;
     }
 
-    this.left = function() {
+    Camera.prototype.left = function() {
     	return -this.x / this.getZScale();
     }
-    this.right = function() {
+    Camera.prototype.right = function() {
     	return -this.x / this.getZScale() + this.canvas.width / this.getZScale();
     }
-    this.top = function() {
+    Camera.prototype.top = function() {
     	return -this.y / this.getZScale();
     }
 
-    this.bottom = function() {
+    Camera.prototype.bottom = function() {
     	return -this.y / this.getZScale() + this.canvas.height / this.getZScale();
     }
 
-    this.center = function() {
+    Camera.prototype.center = function() {
         if (arguments.length === 2) {
             this.x = -arguments[0] * this.getZScale() + this.canvas.width / 2;
             this.y = -arguments[1] * this.getZScale() + this.canvas.height / 2;

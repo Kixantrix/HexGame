@@ -1,21 +1,6 @@
 "use strict";  
 
-// Dynamically resizing factory with which we mage hexPoints
-function HexFactory() {
-  this.points = {}
-
-  // Resizing points array as necessary
-  this.make = function(q,r) {
-
-    // create new point if it doesn't exist
-    var property = q + " " + r;
-    if(!this.points.hasOwnProperty(property)) {
-      this.points[property] = new hexPoint(q, r)
-      return this.points[property];
-    }
-    return this.points[property]  
-  }
-}
+// Contains general helper functions for small data structures
 
 // Creates a point
 function Point(x, y) {
@@ -41,8 +26,16 @@ function pixelToHex(x, y, size) {
   return factory.make(q, r);
 }
 
+// Returns the distance between two hexes
+function hexDistance(a, b) {
+  return (Math.abs(a.q - b.q) 
+    + Math.abs(a.q + a.r - b.q - b.r)
+    + Math.abs(a.r - b.r)) / 2;
+}
+
 module.exports = {'HexFactory': HexFactory,
-                  'Point': Point,
-                  'HexPoint': HexPoint,
-                  'pixelToHex': pixelToHex
+'Point': Point,
+'HexPoint': HexPoint,
+'pixelToHex': pixelToHex,
+'hexDistance': hexDistance
 };

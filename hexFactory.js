@@ -7,7 +7,7 @@ function HexFactory() {
   this.points = {}
 
   // Resizing points array as necessary
-  this.make = function(q,r) {
+  HexFactory.prototype.make = function(q,r) {
 
     // create new point if it doesn't exist
     var property = q + " " + r;

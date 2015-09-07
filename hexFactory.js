@@ -1,6 +1,6 @@
 "use strict";  
 
-var HexPoint = require('./hexPoint')
+var helpers = require('./helpers');
 
 // Dynamically resizing factory with which we mage hexPoints
 function HexFactory() {
@@ -12,7 +12,7 @@ function HexFactory() {
     // create new point if it doesn't exist
     var property = q + " " + r;
     if(!this.points.hasOwnProperty(property)) {
-      this.points[property] = new hexPoint(q, r)
+      this.points[property] = new helpers.HexPoint(q, r);
       return this.points[property];
     }
     return this.points[property]  

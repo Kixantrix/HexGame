@@ -1,3 +1,5 @@
+"use strict";
+
 /*
 Hexagon object which has a place in the grid 
 */
@@ -13,17 +15,19 @@ function Hex(centerQ, centerR, size) {
   this.size = size;   // radius of hexagon
   this.color = "white";
 
-  this.corners = []; // Initiate corner array which holds x and y locations of corners of hex
-  // Generate corners of hexagon.
-  for(var i = 0; i < 6; i++) {
-    this.corners[i] = new HexCorner(size, i);
-  }
-
   // Returns a Point = helpers.point; containing the center x and y coordinates of the hexagon
   Hex.prototype.getCenter = function() {
     var x = this.size * Math.sqrt(3) * (this.q + this.r/2);
     var y = this.size * 3.0 / 2 * this.r;
     return new Point(x,y);
+  }
+
+  this.center = this.getCenter();
+
+  this.corners = []; // Initiate corner array which holds x and y locations of corners of hex
+  // Generate corners of hexagon.
+  for(var i = 0; i < 6; i++) {
+    this.corners[i] = new HexCorner(this.size, i, this.center);
   }
 
   // Draws the hexagon at these coordinates
@@ -32,18 +36,11 @@ function Hex(centerQ, centerR, size) {
     ctx.strokeStyle = "black";
     ctx.fillStyle = this.color;
     ctx.beginPath();
-    var centerCoords = this.getCenter();
-    var coords = camera.transform(centerCoords.x + this.corners[0].cos * this.size,
-      centerCoords.y + this.corners[0].sin * this.size);
-    ctx.moveTo(coords.x, coords.y);
+    ctx.moveTo(this.corners[0].x, this.corners[0].y);
     for(var i = 1; i < 6; i++) {
-      coords = camera.transform(centerCoords.x + this.corners[i].cos * this.size,
-        centerCoords.y + this.corners[i].sin * this.size);
-      ctx.lineTo(coords.x, coords.y);
+      ctx.lineTo(this.corners[i].x, this.corners[i].y);
     }
-    coords = camera.transform(centerCoords.x + this.corners[0].cos * this.size,
-      centerCoords.y + this.corners[0].sin * this.size);
-    ctx.lineTo(coords.x, coords.y);
+    ctx.lineTo(this.corners[0].x, this.corners[0].y);
     ctx.fill();
     ctx.stroke();
   }
@@ -52,11 +49,13 @@ function Hex(centerQ, centerR, size) {
 };
 
 // Creates a vertex of the hexagon with centerX and center Y position
-function HexCorner(size, i) {
+function HexCorner(size, i, center) {
   var angleDeg = 60 * i + 90;
-  this.angle   = Math.PI * angleDeg / 180;
-  this.cos = Math.cos(this.angle);
-  this.sin = Math.sin(this.angle);
+  var angle   = Math.PI * angleDeg / 180;
+  var cos = Math.cos(angle);
+  var sin = Math.sin(angle);
+  this.x = center.x + cos * size;
+  this.y = center.y + sin * size;
 }
 
 module.exports = Hex;

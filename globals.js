@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 // Contains globals of game in globals object
 

@@ -1,6 +1,6 @@
 "use strict";
 // Requires
-var Point = require('./point')['Point'];
+var Point = require('./helpers')['Point'];
 
 var DEFAULT_DEPTH = 1;
 

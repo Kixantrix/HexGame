@@ -1,4 +1,4 @@
- "use strict";
+"use strict";
  (function() {
 
   // Requires and importing functions
@@ -46,9 +46,9 @@
     var HEXSIZE = 50;  // Size in pixels of hexagon width.
 
     // Set game camera 
-    var gameCamera = new camera(window.innerWidth / 2, window.innerHeight / 2, DEFAULT_DEPTH * 1);
+    var gameCamera = new Camera(window.innerWidth / 2, window.innerHeight / 2, DEFAULT_DEPTH * 1, canvas);
     // Set Camera for mini map
-    var mapCamera  = new camera(200, 200, DEFAULT_DEPTH * 4);
+    var mapCamera  = new Camera(200, 200, DEFAULT_DEPTH * 4, canvas);
     
     var grid = [];
 
@@ -67,9 +67,9 @@
     var frequency = 30;
     // Update Loop
     setInterval(function() {
-      count = countUnits();
-      updateMoves(count)
-      updateUnitsToPlace(count);
+      //count = countUnits();
+      //updateMoves(count)
+      //updateUnitsToPlace(count);
     }, 1000 * frequency);
 
 
@@ -145,12 +145,12 @@
           // Find all adjacent Hexes
           var adjacentHexes = findAdjacentHexes(hexSelected.q, hexSelected.r, grid);
           // Try to find a path.
-          var path =  new Path(hexSelected, hexClicked, adjacentHexes, grid);
-          if(path.exists && path.cost <= moves) {
+          //var path =  new Path(hexSelected, hexClicked, adjacentHexes, grid);
+          //if(path.exists && path.cost <= moves) {
             var currentSelected = grid[hexSelected.q][hexSelected.r];
             moveHexes(hexSelected.q, hexSelected.r, hexClicked.q, hexClicked.r, grid, currentSelected.color, adjacentHexes);
             hexSelected = null;
-          }
+          //}
         } else if(grid[hexClicked.q + globals.QDIM][hexClicked.r + globals.RDIM].color == "blue") { // Add new hex
           hexSelected = globals.hexFactory.make(hexClicked.q + globals.QDIM, hexClicked.r + globals.RDIM);
         } else {
@@ -165,6 +165,8 @@
 
   // Calls draw function of all game assets
   function drawGrid(grid, ctx, camera) {
+    ctx.save();
+    camera.applyTransform(ctx);
     for(var q = 0; q <= 2 * globals.QDIM; q++) {
       for(var r = 0; r <= 2* globals.RDIM; r++) {
         // Add hex at axial coordinates in array
@@ -173,5 +175,6 @@
         }
       }
     }
+    ctx.restore();
   }
 }()); 

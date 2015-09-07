@@ -1,5 +1,7 @@
 "use strict";  
 
+var globals = require('./globals');
+
 // Contains general helper functions for small data structures
 
 // Creates a point
@@ -23,7 +25,7 @@ function HexPoint(q, r) {
 function pixelToHex(x, y, size) {
   var q = Math.round((x * Math.sqrt(3)/3 - y / 3) / size);
   var r = Math.round(y * 2.0/3 / size);
-  return factory.make(q, r);
+  return globals.hexFactory.make(q, r);
 }
 
 // Returns the distance between two hexes
@@ -33,7 +35,7 @@ function hexDistance(a, b) {
     + Math.abs(a.r - b.r)) / 2;
 }
 
-module.exports = {'HexFactory': HexFactory,
+module.exports = {
 'Point': Point,
 'HexPoint': HexPoint,
 'pixelToHex': pixelToHex,

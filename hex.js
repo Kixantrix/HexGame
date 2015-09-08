@@ -14,6 +14,7 @@ function Hex(centerQ, centerR, size) {
   this.r = centerR;   // r index
   this.size = size;   // radius of hexagon
   this.color = "white";
+  this.selected = false;
 
   // Returns a Point = helpers.point; containing the center x and y coordinates of the hexagon
   Hex.prototype.getCenter = function() {
@@ -34,7 +35,11 @@ function Hex(centerQ, centerR, size) {
   Hex.prototype.draw = function(ctx, camera) {
     ctx.lineWidth = "1";
     ctx.strokeStyle = "black";
-    ctx.fillStyle = this.color;
+    if(this.selected) {
+      ctx.fillStyle = "black";
+    } else {
+      ctx.fillStyle = this.color;
+    }
     ctx.beginPath();
     ctx.moveTo(this.corners[0].x, this.corners[0].y);
     for(var i = 1; i < 6; i++) {

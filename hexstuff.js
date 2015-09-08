@@ -20,7 +20,7 @@
   // Initiate global constants
   globals.QDIM = 9;             // Number of elements along one side of q axis
   globals.RDIM = 9;             // Number of elements along one side of r axis
-  var DEFAULT_DEPTH = 100;      // Default z position of camera
+  var DEFAULT_DEPTH = 1;        // Default z position of camera
   
   // Offsets of each neighboring hex
   globals.SIDEQ = [1, 0, -1, -1, 0, 1]; 
@@ -149,10 +149,12 @@
           //if(path.exists && path.cost <= moves) {
             var currentSelected = grid[hexSelected.q][hexSelected.r];
             moveHexes(hexSelected.q, hexSelected.r, hexClicked.q, hexClicked.r, grid, currentSelected.color, adjacentHexes);
+            grid[hexSelected.q][hexSelected.r].selected = false;
             hexSelected = null;
           //}
         } else if(grid[hexClicked.q + globals.QDIM][hexClicked.r + globals.RDIM].color == "blue") { // Add new hex
           hexSelected = globals.hexFactory.make(hexClicked.q + globals.QDIM, hexClicked.r + globals.RDIM);
+          grid[hexSelected.q][hexSelected.r].selected = true;
         } else {
 
         }

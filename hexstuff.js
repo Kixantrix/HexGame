@@ -152,7 +152,10 @@
             grid[hexSelected.q][hexSelected.r].selected = false;
             hexSelected = null;
           //}
-        } else if(grid[hexClicked.q + globals.QDIM][hexClicked.r + globals.RDIM].color == "blue") { // Add new hex
+        } else if(currentHex.color == "blue") { // Switch Selected
+          if(hexSelected) {
+            grid[hexSelected.q][hexSelected.r].selected = false;
+          }
           hexSelected = globals.hexFactory.make(hexClicked.q + globals.QDIM, hexClicked.r + globals.RDIM);
           grid[hexSelected.q][hexSelected.r].selected = true;
         } else {

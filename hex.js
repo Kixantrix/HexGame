@@ -5,6 +5,7 @@ Hexagon object which has a place in the grid
 */
 
 var Point = require('./helpers').Point;
+var LINEWIDTH = 1;
 
 /* Constructor for hexagon object, passing in q and r location
 along with size. 
@@ -15,6 +16,11 @@ function Hex(centerQ, centerR, size) {
   this.size = size;   // radius of hexagon
   this.color = "white";
   this.selected = false;
+
+  // Fields for traversal
+  this.cost = Infinity;
+  this.tail = null;
+  this.known = false;
 
   // Returns a Point = helpers.point; containing the center x and y coordinates of the hexagon
   Hex.prototype.getCenter = function() {
@@ -33,7 +39,7 @@ function Hex(centerQ, centerR, size) {
 
   // Draws the hexagon at these coordinates
   Hex.prototype.draw = function(ctx, camera) {
-    ctx.lineWidth = "1";
+    ctx.lineWidth = "" + LINEWIDTH;
     ctx.strokeStyle = "black";
     if(this.selected) {
       ctx.fillStyle = "black";
@@ -46,8 +52,14 @@ function Hex(centerQ, centerR, size) {
       ctx.lineTo(this.corners[i].x, this.corners[i].y);
     }
     ctx.lineTo(this.corners[0].x, this.corners[0].y);
-    ctx.fill();
+
     ctx.stroke();
+    if(this.cost != Infinity) {
+      console.log("drawing path");
+      ctx.beginPath();
+      ctx.arc(this.center.x, this.center.y, this.cost, 0, 2 * Math.PI, false);
+    }
+    ctx.fill();
   }
 
 

@@ -1,6 +1,7 @@
 "use strict";
 
 var globals = require('./globals');
+var HexPoint = require('./helpers').HexPoint;
 
 
   // Moves all hexes connected to old location to new location.
@@ -72,12 +73,13 @@ var globals = require('./globals');
 
   // An object representing a path from an original spot to a new spot
   function Path(begin, end, adjacentHexes, grid) {
+    /*
     // Parameters, used in fields to retain information for re-examination.
     this.begin = begin;
     this.end = end;
     this.adjacentHexes = adjacentHexes;
     this.grid = grid;
-    this.path = []
+    this.path = [];
     this.cost = 0;
     this.exists = false;
 
@@ -117,8 +119,8 @@ var globals = require('./globals');
       if(currentHex == this.end) {
         this.cost = costMap[currentHex.toString()];
         this.exists = true;
-        place = currentHex
-        backwardsPath = []
+        var place = currentHex;
+        var backwardsPath = [];
         while(cameFrom.hasOwnProperty(place.toString())) {
           this.Backwardspath.add(place)
           place = cameFrom(place.toString());
@@ -142,8 +144,8 @@ var globals = require('./globals');
 
     // Returns true if the hexes can move to the new position from their original position
     Path.prototype.canMoveTo = function(newPosition) {
-      qDisplacement = this.begin.q - newPosition.q;
-      rDisplacement = this.begin.r - newPosition.r;
+      var qDisplacement = this.begin.q - newPosition.q;
+      var rDisplacement = this.begin.r - newPosition.r;
       for(let item of this.adjacentHexes) {
         // Check space exists and is open
         if(!(this.grid[item.q + qDisplacement] && this.grid[item.q + qDisplacement][item.r + rDisplacement]
@@ -153,6 +155,63 @@ var globals = require('./globals');
       return true;
     }
   }
+  */
+}
+
+// Explores all paths in grid to show where the player can go.
+function findAllPaths(begin, grid) {
+  var adjacentHexesToBegin = findAdjacentHexes(begin.q, begin.r, grid);
+  // Set of all nodes to be examined
+  var fringe = new Set();
+  // Add beginning to known set and adjust it's cost
+  grid[begin.q][begin.r].cost = 0;
+  fringe.add(begin);
+
+  while(fringe.size != 0) {
+    for(let item of fringe) {               // Iterate through fringe
+      var currentHex = grid[item.q][item.r];
+      fringe.delete(item);                  // Remove item from fringe
+      currentHex.known = true;              // Mark as known           
+      
+      // If this is a valid destination, add neighbors to fringe.
+      if(!canMoveTo(begin, currentHex, adjacentHexes, grid)) {
+        var neighbors = getNeighbors(item, grid);
+        // Add each neighbors which is not already known.
+        for(var i = 0; i < neighbors.length; i++) {
+          var neighbor = grid[neighbors[i].q][neighbors[i].r];
+          // Mark as known if can't move to currentHex with every neighbor
+          // Add unknown neighbors to fringe and update their costs
+          if(!neighbor.known) {
+            fringe.add(neighbors[i]);
+            // Update cost if better path
+            var newCost = currentHex.cost + adjacentHexes.length;
+            if(neighbor.cost > newCost) {
+              neighbor.cost = newCost;  
+            }
+          }
+        }
+      } 
+    }
+  }
+}
+
+// Returns true if the spaces 
+function canMoveTo(begin, newPosition, adjacentHexes, grid) {
+  var qDisplacement = begin.q - newPosition.q;
+  var rDisplacement = begin.r - newPosition.r;
+  var color = grid[begin.q][begin.r];
+  for(let item of adjacentHexes) {
+    // Check space exists and is open
+    var positionExamined = globals.hexFactory.make(item.q + qDisplacement, item.r + rDisplacement);
+    if(!(grid[positionExamined.q] && grid[positionExamined.q][positionExamined.r]
+      && (grid[positionExamined.q][positionExamined.r].color == "white")
+      || (grid[positionExamined.q][positionExamined.r].color == color
+      && adjacentHexes.contains(positionExamined))
+      )) {
+      return false;
+    }
+    return true;
+  }
 }
 
 module.exports = {
@@ -160,5 +219,6 @@ module.exports = {
   'findAdjacentHexes': findAdjacentHexes,
   'getNeighbors': getNeighbors,
   'getAttack': getAttack,
-  'Path': Path
-}
+  'Path': Path,
+  'findAllPaths': findAllPaths
+};

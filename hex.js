@@ -52,13 +52,13 @@ function Hex(centerQ, centerR, size) {
       ctx.lineTo(this.corners[i].x, this.corners[i].y);
     }
     ctx.lineTo(this.corners[0].x, this.corners[0].y);
-
-    ctx.stroke();
-    if(this.cost != Infinity) {
-      console.log("drawing path");
-      ctx.beginPath();
+    
+    if(this.cost != Infinity && this.cost != 0) {
+      console.log(this.cost);
+      ctx.moveTo(this.center.x, this.center.y);
       ctx.arc(this.center.x, this.center.y, this.cost, 0, 2 * Math.PI, false);
     }
+    ctx.stroke();
     ctx.fill();
   }
 

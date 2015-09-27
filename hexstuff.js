@@ -12,7 +12,7 @@
   var getNeighbors = require('./pathing').getNeighbors;
   var getAttack = require('./pathing').getAttack;
   var Path = require('./pathing').Path;
-  var findAllPaths = require('./pathing').Path;
+  var findAllPaths = require('./pathing').findAllPaths;
   var Point = helpers.Point;
   var HexPoint = helpers.HexPoint;
   var pixelToHex = helpers.pixelToHex;
@@ -87,9 +87,6 @@
       canvas.height = window.innerHeight;    
       mapCamera.moveY(window.innerHeight - 200);
       unitsToPlace++;
-      if(hexSelected) {
-        findAllPaths(hexSelected, grid);  
-      }
     }
 
     // Draw things
@@ -162,17 +159,24 @@
           }
         // Prime grid
         for(var q = 0; q < grid.length; q++) {
-          for(var r = 0; r < grid[q].length; r++) {
-            grid[q][r].cost = Infinity;
-            grid[q][r].known = false;
+          if(grid[q]) {
+            for(var r = 0; r < grid[q].length; r++) {
+              if(grid[q][r]) {
+                grid[q][r].cost = Infinity;
+                grid[q][r].known = false;
+              }
+            }
           }
+          
         }
           hexSelected = globals.hexFactory.make(hexClicked.q + globals.QDIM, hexClicked.r + globals.RDIM);
           grid[hexSelected.q][hexSelected.r].selected = true;
         } else {
 
         }
-        
+        if(hexSelected) {
+          findAllPaths(hexSelected, grid);  
+        } 
       }
     }
   });

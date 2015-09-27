@@ -160,7 +160,7 @@ var HexPoint = require('./helpers').HexPoint;
 
 // Explores all paths in grid to show where the player can go.
 function findAllPaths(begin, grid) {
-  var adjacentHexesToBegin = findAdjacentHexes(begin.q, begin.r, grid);
+  var adjacentHexes = findAdjacentHexes(begin.q, begin.r, grid);
   // Set of all nodes to be examined
   var fringe = new Set();
   // Add beginning to known set and adjust it's cost
@@ -186,6 +186,7 @@ function findAllPaths(begin, grid) {
             // Update cost if better path
             var newCost = currentHex.cost + adjacentHexes.length;
             if(neighbor.cost > newCost) {
+              console.log(newCost);
               neighbor.cost = newCost;  
             }
           }
@@ -199,18 +200,20 @@ function findAllPaths(begin, grid) {
 function canMoveTo(begin, newPosition, adjacentHexes, grid) {
   var qDisplacement = begin.q - newPosition.q;
   var rDisplacement = begin.r - newPosition.r;
-  var color = grid[begin.q][begin.r];
+  var color = grid[begin.q][begin.r].color;
   for(let item of adjacentHexes) {
     // Check space exists and is open
     var positionExamined = globals.hexFactory.make(item.q + qDisplacement, item.r + rDisplacement);
     if(!(grid[positionExamined.q] && grid[positionExamined.q][positionExamined.r]
-      && (grid[positionExamined.q][positionExamined.r].color == "white")
+      && ((grid[positionExamined.q][positionExamined.r].color == "white")
       || (grid[positionExamined.q][positionExamined.r].color == color
-      && adjacentHexes.contains(positionExamined))
+      && adjacentHexes.contains(positionExamined)))
       )) {
       return false;
     }
+    console.log(true);
     return true;
+
   }
 }
 

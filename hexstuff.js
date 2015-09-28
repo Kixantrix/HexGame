@@ -33,8 +33,8 @@
   // Initialize game variables, loops and 
   window.onload = function() {
     // Initite canvas
-    var moves = 0;
-    var unitsToPlace = 0;
+    globals.moves = 0;
+    globals.unitsToPlace = 0;
     var hexSelected  = null;
     var canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;

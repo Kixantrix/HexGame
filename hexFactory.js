@@ -4,7 +4,7 @@ var helpers = require('./helpers');
 
 // Dynamically resizing factory with which we mage hexPoints
 function HexFactory() {
-  this.points = {}
+  this.points = {};
 
   // Resizing points array as necessary
   HexFactory.prototype.make = function(q,r) {
@@ -15,7 +15,7 @@ function HexFactory() {
       this.points[property] = new helpers.HexPoint(q, r);
       return this.points[property];
     }
-    return this.points[property]  
+    return this.points[property];
   }
 }
 

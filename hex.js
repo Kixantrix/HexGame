@@ -6,6 +6,7 @@ Hexagon object which has a place in the grid
 
 var Point = require('./helpers').Point;
 var LINEWIDTH = 1;
+var globals = require('./globals');
 
 /* Constructor for hexagon object, passing in q and r location
 along with size. 
@@ -46,20 +47,33 @@ function Hex(centerQ, centerR, size) {
     } else {
       ctx.fillStyle = this.color;
     }
+
+
     ctx.beginPath();
     ctx.moveTo(this.corners[0].x, this.corners[0].y);
     for(var i = 1; i < 6; i++) {
       ctx.lineTo(this.corners[i].x, this.corners[i].y);
     }
     ctx.lineTo(this.corners[0].x, this.corners[0].y);
+    ctx.fill();
+    ctx.stroke();
     
     if(this.cost != Infinity && this.cost != 0) {
-      console.log(this.cost);
-      ctx.moveTo(this.center.x, this.center.y);
-      ctx.arc(this.center.x, this.center.y, this.cost, 0, 2 * Math.PI, false);
+      ctx.fillStyle= globals.player.color;
+      ctx.globalAlpha = (0.75 / this.cost);
+      ctx.beginPath();
+      ctx.moveTo(this.corners[0].x, this.corners[0].y);
+      for(var i = 1; i < 6; i++) {
+        ctx.lineTo(this.corners[i].x, this.corners[i].y);
+      }
+      ctx.lineTo(this.corners[0].x, this.corners[0].y);
+      ctx.fill();
+      ctx.globalAlpha = 1;
     }
-    ctx.stroke();
-    ctx.fill();
+
+    ctx.fillStyle = 'black';
+    ctx.font = "10px Arial";
+    ctx.fillText(this.cost,this.center.x,this.center.y);
   }
 
 

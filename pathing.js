@@ -160,35 +160,44 @@ var HexPoint = require('./helpers').HexPoint;
 
 // Explores all paths in grid to show where the player can go.
 function findAllPaths(begin, grid) {
+  // Prime grid
+  for(var q = 0; q < grid.length; q++) {
+    if(grid[q]) {
+      for(var r = 0; r < grid[q].length; r++) {
+        if(grid[q][r]) {
+          grid[q][r].cost = Infinity;
+          grid[q][r].known = false;
+        }
+      }
+    } 
+  }
+  // Hexes to be moved
   var adjacentHexes = findAdjacentHexes(begin.q, begin.r, grid);
   // Set of all nodes to be examined
   var fringe = new Set();
   // Add beginning to known set and adjust it's cost
   grid[begin.q][begin.r].cost = 0;
   fringe.add(begin);
-
+  // Iterate through fringe, removing items and marking them as known.
   while(fringe.size != 0) {
-    for(let item of fringe) {               // Iterate through fringe
+    for(let item of fringe) {               
       var currentHex = grid[item.q][item.r];
-      fringe.delete(item);                  // Remove item from fringe
-      currentHex.known = true;              // Mark as known           
+      fringe.delete(item);
+      currentHex.known = true;
       
-      // If this is a valid destination, add neighbors to fringe.
-      if(!canMoveTo(begin, currentHex, adjacentHexes, grid)) {
-        var neighbors = getNeighbors(item, grid);
-        // Add each neighbors which is not already known.
-        for(var i = 0; i < neighbors.length; i++) {
-          var neighbor = grid[neighbors[i].q][neighbors[i].r];
-          // Mark as known if can't move to currentHex with every neighbor
-          // Add unknown neighbors to fringe and update their costs
-          if(!neighbor.known) {
-            fringe.add(neighbors[i]);
-            // Update cost if better path
-            var newCost = currentHex.cost + adjacentHexes.length;
-            if(neighbor.cost > newCost) {
-              console.log(newCost);
-              neighbor.cost = newCost;  
-            }
+      var neighbors = getNeighbors(item, grid);
+      // Add each neighbors which is not already known.
+      for(var i = 0; i < neighbors.length; i++) {
+        var neighbor = grid[neighbors[i].q][grid[neighbors[i].r]];
+        console.log(neighbor);
+        // Add unknown neighbors to fringe and update their costs
+        if(!neighbor.known && canMoveTo(begin, neighbors[i], adjacentHexes, grid)) {
+          fringe.add(neighbors[i]);
+          // Update cost if better path
+          var newCost = currentHex.cost + adjacentHexes.size;
+          if(neighbor.cost > newCost) {
+            neighbor.cost = newCost;
+            neighbor.tail = currentHex;
           }
         }
       } 
@@ -196,7 +205,8 @@ function findAllPaths(begin, grid) {
   }
 }
 
-// Returns true if the spaces 
+// Returns true if the set of adjacentHexes can be moved to newPosition
+// Without overlapping with other hexes.
 function canMoveTo(begin, newPosition, adjacentHexes, grid) {
   var qDisplacement = begin.q - newPosition.q;
   var rDisplacement = begin.r - newPosition.r;
@@ -206,12 +216,10 @@ function canMoveTo(begin, newPosition, adjacentHexes, grid) {
     var positionExamined = globals.hexFactory.make(item.q + qDisplacement, item.r + rDisplacement);
     if(!(grid[positionExamined.q] && grid[positionExamined.q][positionExamined.r]
       && ((grid[positionExamined.q][positionExamined.r].color == "white")
-      || (grid[positionExamined.q][positionExamined.r].color == color
-      && adjacentHexes.contains(positionExamined)))
+      || adjacentHexes.contains(positionExamined))
       )) {
       return false;
     }
-    console.log(true);
     return true;
 
   }

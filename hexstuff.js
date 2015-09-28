@@ -46,6 +46,10 @@
     
     var HEXSIZE = 50;  // Size in pixels of hexagon width.
 
+    globals.player = {
+      'color': 'blue'
+    }
+
     // Set game camera 
     var gameCamera = new Camera(window.innerWidth / 2, window.innerHeight / 2, DEFAULT_DEPTH * 1, canvas);
     // Set Camera for mini map
@@ -152,23 +156,23 @@
             moveHexes(hexSelected.q, hexSelected.r, hexClicked.q, hexClicked.r, grid, currentSelected.color, adjacentHexes);
             grid[hexSelected.q][hexSelected.r].selected = false;
             hexSelected = null;
+            // Prime grid
+            for(var q = 0; q < grid.length; q++) {
+              if(grid[q]) {
+                for(var r = 0; r < grid[q].length; r++) {
+                  if(grid[q][r]) {
+                    grid[q][r].cost = Infinity;
+                    grid[q][r].known = false;
+                  }
+                }
+              } 
+            }
           //}
         } else if(currentHex.color == "blue") { // Switch Selected
           if(hexSelected) {
             grid[hexSelected.q][hexSelected.r].selected = false;
           }
-        // Prime grid
-        for(var q = 0; q < grid.length; q++) {
-          if(grid[q]) {
-            for(var r = 0; r < grid[q].length; r++) {
-              if(grid[q][r]) {
-                grid[q][r].cost = Infinity;
-                grid[q][r].known = false;
-              }
-            }
-          }
-          
-        }
+
           hexSelected = globals.hexFactory.make(hexClicked.q + globals.QDIM, hexClicked.r + globals.RDIM);
           grid[hexSelected.q][hexSelected.r].selected = true;
         } else {

@@ -90,7 +90,7 @@
       canvas.width = window.innerWidth; 
       canvas.height = window.innerHeight;    
       mapCamera.moveY(window.innerHeight - 200);
-      unitsToPlace++;
+      globals.unitsToPlace++;
     }
 
     // Draw things

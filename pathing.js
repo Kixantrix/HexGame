@@ -180,7 +180,7 @@ function findAllPaths(begin, grid) {
   fringe.add(begin);
   // Iterate through fringe, removing items and marking them as known.
   while(fringe.size != 0) {
-    for(let item of fringe) {               
+    for(let item of fringe) {
       var currentHex = grid[item.q][item.r];
       fringe.delete(item);
       currentHex.known = true;
@@ -188,8 +188,7 @@ function findAllPaths(begin, grid) {
       var neighbors = getNeighbors(item, grid);
       // Add each neighbors which is not already known.
       for(var i = 0; i < neighbors.length; i++) {
-        var neighbor = grid[neighbors[i].q][grid[neighbors[i].r]];
-        console.log(neighbor);
+        var neighbor = grid[neighbors[i].q][neighbors[i].r];
         // Add unknown neighbors to fringe and update their costs
         if(!neighbor.known && canMoveTo(begin, neighbors[i], adjacentHexes, grid)) {
           fringe.add(neighbors[i]);
@@ -216,7 +215,7 @@ function canMoveTo(begin, newPosition, adjacentHexes, grid) {
     var positionExamined = globals.hexFactory.make(item.q + qDisplacement, item.r + rDisplacement);
     if(!(grid[positionExamined.q] && grid[positionExamined.q][positionExamined.r]
       && ((grid[positionExamined.q][positionExamined.r].color == "white")
-      || adjacentHexes.contains(positionExamined))
+      || adjacentHexes.has(positionExamined))
       )) {
       return false;
     }

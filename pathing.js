@@ -8,12 +8,18 @@ var HexPoint = require('./helpers').HexPoint;
   function moveHexes(centerQ, centerR, newQ, newR, grid, color, adjacentHexes) {
     var rDif = newR - centerR;           // Amount of offset to add to each r coordinate.
     var qDif = newQ - centerQ;           // Amount of offset to add to each q coordinate.
+    var newCoords = [];
     for(let coord of adjacentHexes) {
-      if(grid[coord.q + qDif + globals.QDIM] && grid[coord.q + qDif + globals.QDIM][coord.r + rDif + globals.RDIM]) {
-        grid[coord.q + qDif + globals.QDIM][coord.r + rDif + globals.RDIM].color = color;
+      // New position
+      var movedCoord = globals.hexFactory.make(coord.q + qDif + globals.QDIM, coord.r + rDif + globals.RDIM);
+      if(grid[movedCoord.q] && grid[movedCoord.q][movedCoord.r]) {
+        newCoords.push(movedCoord);
         grid[coord.q][coord.r].color = "white";
       }
-    } 
+    }
+    for(var index = 0; index < newCoords.length; index++) {
+      grid[newCoords[index].q][newCoords[index].r].color = color;
+    }
   }
 
   // Returns a set of all Point = helpers.point;s of same color provided connected to the hex
@@ -31,7 +37,7 @@ var HexPoint = require('./helpers').HexPoint;
         fringe.delete(item);                  // Remove item from fringe
         known.add(item);                      // Add item to known set
         if(currentHex.color == color) {       // Add same color to adjacent set
-          adjacentHexes.add(item);            
+          adjacentHexes.add(item);
           var neighbors = getNeighbors(item, grid);
           // Add each neighbors which is not already known.
           for(var i = 0; i < neighbors.length; i++) {

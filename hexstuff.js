@@ -106,6 +106,13 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawGrid(grid, ctx, globals.gameCamera);
       drawMiniMap();
+      drawResources();
+    }
+
+    function drawResources() {
+      ctx.fillStyle = 'black';
+      ctx.font = "20px Arial";
+      ctx.fillText("Hexes to Place: " + globals.unitsToPlace + "  Moves: " + globals.moves, 0, 20);
     }
 
     // Draws min map

@@ -76,6 +76,22 @@ function Hex(centerQ, centerR, size) {
     ctx.fillText(this.cost,this.center.x,this.center.y);
   }
 
+  // Recursively drars of hex if tail exists
+  Hex.prototype.drawPath = function(ctx, camera) {
+    if(this.tail) {
+      ctx.lineWidth = "10";
+      ctx.strokeStyle = "black";
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(this.center.x, this.center.y, this.size / 3, 0, 2*Math.PI);
+      ctx.moveTo(this.center.x, this.center.y);
+      ctx.lineTo(this.tail.center.x, this.tail.center.y);
+      ctx.fill();
+      ctx.stroke();
+      this.tail.drawPath(ctx, camera);
+    }
+  }
+
 
 };
 

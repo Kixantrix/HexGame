@@ -167,6 +167,7 @@ function findAllPaths(begin, grid) {
         if(grid[q][r]) {
           grid[q][r].cost = Infinity;
           grid[q][r].known = false;
+          grid[q][r].tail = null;
         }
       }
     } 

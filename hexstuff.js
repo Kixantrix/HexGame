@@ -35,7 +35,7 @@
     // Initite canvas
     globals.moves = 0;
     globals.unitsToPlace = 0;
-    var hexSelected  = null;
+    globals.hexSelected  = null;
     var canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerWidth;
@@ -44,16 +44,16 @@
     // Generate context for 2d drawing
     var ctx = canvas.getContext("2d");
     
-    var HEXSIZE = 50;  // Size in pixels of hexagon width.
+    globals.HEXSIZE = 50;  // Size in pixels of hexagon width.
 
     globals.player = {
       'color': 'blue'
     }
 
     // Set game camera 
-    var gameCamera = new Camera(window.innerWidth / 2, window.innerHeight / 2, DEFAULT_DEPTH * 1, canvas);
+    globals.gameCamera = new Camera(window.innerWidth / 2, window.innerHeight / 2, DEFAULT_DEPTH * 1, canvas);
     // Set Camera for mini map
-    var mapCamera  = new Camera(200, 200, DEFAULT_DEPTH * 4, canvas);
+    globals.mapCamera  = new Camera(200, 200, DEFAULT_DEPTH * 4, canvas);
     
     var grid = [];
 
@@ -63,9 +63,17 @@
       for(var r = -1 * globals.RDIM; r <= globals.RDIM; r++) {
         // Add hex at axial coordinates
         if(Math.abs(q + r) <= globals.QDIM) {
-          grid[q + globals.QDIM][r + globals.RDIM] = new Hex(q, r, HEXSIZE);
+          grid[q + globals.QDIM][r + globals.RDIM] = new Hex(q, r, globals.HEXSIZE);
         }
       }
+    }
+
+    // Mouse information for use in drawing paths
+    globals.cursorX = 0;
+    globals.cursorY = 0;
+    document.onmousemove = function(e){
+      globals.cursorX = e.pageX;
+      globals.cursorY = e.pageY;
     }
 
 
@@ -89,26 +97,26 @@
     function update() {
       canvas.width = window.innerWidth; 
       canvas.height = window.innerHeight;    
-      mapCamera.moveY(window.innerHeight - 200);
+      globals.mapCamera.moveY(window.innerHeight - 200);
       globals.unitsToPlace++;
     }
 
     // Draw things
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawGrid(grid, ctx, gameCamera);
+      drawGrid(grid, ctx, globals.gameCamera);
       drawMiniMap();
     }
 
     // Draws min map
     function drawMiniMap() {
-      drawGrid(grid, ctx, mapCamera);
-      var boxCoords = mapCamera.transform(-1 * gameCamera.x, -1 * gameCamera.y);
+      drawGrid(grid, ctx, globals.mapCamera);
+      var boxCoords = globals.mapCamera.transform(-1 * globals.gameCamera.x, -1 * globals.gameCamera.y);
       ctx.lineWidth = "1";
       ctx.strokeStyle = "black";
       ctx.rect(boxCoords.x, boxCoords.y,
-        canvas.width * mapCamera.getZScale(),
-        canvas.height * mapCamera.getZScale());
+        canvas.width * globals.mapCamera.getZScale(),
+        canvas.height * globals.mapCamera.getZScale());
       ctx.stroke();
     }
 
@@ -120,42 +128,42 @@
     var mouse = {
       x: e.pageX,
       y: e.pageY
-    }
+    };
 
-    var mapCoord = mapCamera.antiTransform(mouse.x, mouse.y);
-    var hexClicked = pixelToHex(mapCoord.x, mapCoord.y, HEXSIZE + 1);
+    var mapCoord = globals.mapCamera.antiTransform(mouse.x, mouse.y);
+    var hexClicked = pixelToHex(mapCoord.x, mapCoord.y, globals.HEXSIZE + 1);
 
     // Inside minimap
     if(Math.abs(hexClicked.q) <= globals.QDIM 
       && Math.abs(hexClicked.r) <= globals.RDIM 
       && Math.abs(hexClicked.q + hexClicked.r) <= globals.QDIM) {
-      gameCamera.moveX(canvas.width / 2 - mapCoord.x);
-    gameCamera.moveY(canvas.height / 2 - mapCoord.y);
+      globals.gameCamera.moveX(canvas.width / 2 - mapCoord.x);
+    globals.gameCamera.moveY(canvas.height / 2 - mapCoord.y);
 
     } else {    // Outside minimap
-      var gameCoord = gameCamera.antiTransform(mouse.x, mouse.y);
-      hexClicked = pixelToHex(gameCoord.x, gameCoord.y, HEXSIZE);
+      var gameCoord = globals.gameCamera.antiTransform(mouse.x, mouse.y);
+      hexClicked = pixelToHex(gameCoord.x, gameCoord.y, globals.HEXSIZE);
       if(Math.abs(hexClicked.q) <= globals.QDIM    // Case inside grid
         && Math.abs(hexClicked.r) <= globals.RDIM 
         && Math.abs(hexClicked.q + hexClicked.r) <= globals.QDIM) {
         var currentHex = grid[hexClicked.q + globals.QDIM][hexClicked.r + globals.RDIM];
         if(currentHex.color == "white"     // Empty spot, nothing selected
-          && hexSelected == null 
+          && globals.hexSelected == null 
           /*&& gridunitsToPlace > 0*/) {    
           currentHex.color = "blue";
           //unitsToPlace--;
         } else if(currentHex.color == "white" // Empty spot, something selected. Try to move.
-          && hexSelected != null 
+          && globals.hexSelected != null 
           /*&& gridunitsToPlace > 0*/) { 
           // Find all adjacent Hexes
-          var adjacentHexes = findAdjacentHexes(hexSelected.q, hexSelected.r, grid);
+          var adjacentHexes = findAdjacentHexes(globals.hexSelected.q, globals.hexSelected.r, grid);
           // Try to find a path.
-          //var path =  new Path(hexSelected, hexClicked, adjacentHexes, grid);
+          //var path =  new Path(globals.hexSelected, hexClicked, adjacentHexes, grid);
           //if(path.exists && path.cost <= moves) {
-            var currentSelected = grid[hexSelected.q][hexSelected.r];
-            moveHexes(hexSelected.q, hexSelected.r, hexClicked.q, hexClicked.r, grid, currentSelected.color, adjacentHexes);
-            grid[hexSelected.q][hexSelected.r].selected = false;
-            hexSelected = null;
+            var currentSelected = grid[globals.hexSelected.q][globals.hexSelected.r];
+            moveHexes(globals.hexSelected.q, globals.hexSelected.r, hexClicked.q, hexClicked.r, grid, currentSelected.color, adjacentHexes);
+            grid[globals.hexSelected.q][globals.hexSelected.r].selected = false;
+            globals.hexSelected = null;
             // Prime grid
             for(var q = 0; q < grid.length; q++) {
               if(grid[q]) {
@@ -169,17 +177,17 @@
             }
           //}
         } else if(currentHex.color == "blue") { // Switch Selected
-          if(hexSelected) {
-            grid[hexSelected.q][hexSelected.r].selected = false;
+          if(globals.hexSelected) {
+            grid[globals.hexSelected.q][globals.hexSelected.r].selected = false;
           }
 
-          hexSelected = globals.hexFactory.make(hexClicked.q + globals.QDIM, hexClicked.r + globals.RDIM);
-          grid[hexSelected.q][hexSelected.r].selected = true;
+          globals.hexSelected = globals.hexFactory.make(hexClicked.q + globals.QDIM, hexClicked.r + globals.RDIM);
+          grid[globals.hexSelected.q][globals.hexSelected.r].selected = true;
         } else {
 
         }
-        if(hexSelected) {
-          findAllPaths(hexSelected, grid);  
+        if(globals.hexSelected) {
+          findAllPaths(globals.hexSelected, grid);
         } 
       }
     }
@@ -197,6 +205,16 @@
         if(Math.abs(q - globals.QDIM + r - globals.RDIM) <= globals.QDIM) {
           grid[q][r].draw(ctx, camera);
         }
+      }
+    }
+    if(globals.hexSelected) {
+      var gameCoord = globals.gameCamera.antiTransform(globals.cursorX, globals.cursorY);
+      var mouseOverHex = pixelToHex(gameCoord.x, gameCoord.y, globals.HEXSIZE);
+      if(Math.abs(mouseOverHex.q) <= globals.QDIM    // Case inside grid
+        && Math.abs(mouseOverHex.r) <= globals.RDIM 
+        && Math.abs(mouseOverHex.q + mouseOverHex.r) <= globals.QDIM) {
+        var currentHex = grid[mouseOverHex.q + globals.QDIM][mouseOverHex.r + globals.RDIM];
+        currentHex.drawPath(ctx, camera);
       }
     }
     ctx.restore();

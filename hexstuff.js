@@ -47,7 +47,8 @@
     globals.HEXSIZE = 50;  // Size in pixels of hexagon width.
 
     globals.player = {
-      'color': 'blue'
+      'color': 'blue',
+      'count': 0
     }
 
     // Set game camera 
@@ -96,10 +97,25 @@
     // Updates things...
     function update() {
       canvas.width = window.innerWidth; 
-      canvas.height = window.innerHeight;    
+      canvas.height = window.innerHeight;
       globals.mapCamera.moveY(window.innerHeight - 200);
-      globals.unitsToPlace++;
+      countHexes(globals.player, grid);
     }
+
+    // Updates the global count of hexes
+    function countHexes(player, grid) {
+      var numHexes = 0;
+      for(var i = 0; i < grid.length; i++) {
+        for(var j = 0; j < grid[i].length; j++) {
+          if(grid[i][j] && (grid[i][j].color == player.color)) {
+            numHexes++;
+          }
+        }
+      }
+      player.numHexes = numHexes;
+    }
+
+
 
     // Draw things
     function draw() {
@@ -159,7 +175,7 @@
           /*&& gridunitsToPlace > 0*/) {    
           currentHex.color = "blue";
           //unitsToPlace--;
-        } else if(currentHex.color == "white" // Empty spot, something selected. Try to move.
+        } else if(currentHex.cost != Infinity // Empty spot, something selected. Try to move.
           && globals.hexSelected != null 
           /*&& gridunitsToPlace > 0*/) { 
           // Find all adjacent Hexes

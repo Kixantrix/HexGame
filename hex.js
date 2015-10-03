@@ -58,9 +58,9 @@ function Hex(centerQ, centerR, size) {
     ctx.fill();
     ctx.stroke();
     
-    if(this.cost != Infinity && this.cost != 0) {
+    if(this.cost != Infinity && this.cost != 0 && this.cost < globals.player.moves) {
       ctx.fillStyle= globals.player.color;
-      ctx.globalAlpha = (0.75 / this.cost);
+      ctx.globalAlpha = (0.5);
       ctx.beginPath();
       ctx.moveTo(this.corners[0].x, this.corners[0].y);
       for(var i = 1; i < 6; i++) {

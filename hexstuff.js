@@ -33,8 +33,6 @@
   // Initialize game variables, loops and 
   window.onload = function() {
     // Initite canvas
-    globals.moves = 0;
-    globals.unitsToPlace = 0;
     globals.hexSelected  = null;
     var canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;
@@ -48,7 +46,9 @@
 
     globals.player = {
       'color': 'blue',
-      'count': 0
+      'count': 0,
+      'moves': 0,
+      'unitsToPlace': 4
     }
 
     // Set game camera 
@@ -100,6 +100,8 @@
       canvas.height = window.innerHeight;
       globals.mapCamera.moveY(window.innerHeight - 200);
       countHexes(globals.player, grid);
+      updateMoves(globals.player);
+      updateUnitsToPlace(globals.player);
     }
 
     // Updates the global count of hexes
@@ -115,7 +117,14 @@
       player.numHexes = numHexes;
     }
 
+    // Updates the total number of moves of the player
+    function updateMoves(player) {
+      player.moves += Math.log(player.numHexes + 1) / 30;
+    }
 
+    function updateUnitsToPlace(player) {
+      player.unitsToPlace += Math.log(player.numHexes + 1) / 30;
+    }
 
     // Draw things
     function draw() {
@@ -128,7 +137,8 @@
     function drawResources() {
       ctx.fillStyle = 'black';
       ctx.font = "20px Arial";
-      ctx.fillText("Hexes to Place: " + globals.unitsToPlace + "  Moves: " + globals.moves, 0, 20);
+      ctx.fillText("Hexes to Place: " + Math.floor(globals.player.unitsToPlace) 
+        + "  Moves: " + Math.floor(globals.player.moves), 0, 20);
     }
 
     // Draws min map
@@ -172,13 +182,16 @@
         var currentHex = grid[hexClicked.q + globals.QDIM][hexClicked.r + globals.RDIM];
         if(currentHex.color == "white"     // Empty spot, nothing selected
           && globals.hexSelected == null 
+          && globals.player.unitsToPlace >= 1
           /*&& gridunitsToPlace > 0*/) {    
           currentHex.color = "blue";
+          globals.player.unitsToPlace--;
           //unitsToPlace--;
-        } else if(currentHex.cost != Infinity // Empty spot, something selected. Try to move.
+        } else if(currentHex.cost <= globals.player.moves // Empty spot, something selected. Try to move.
           && globals.hexSelected != null 
           /*&& gridunitsToPlace > 0*/) { 
           // Find all adjacent Hexes
+          globals.player.moves -= currentHex.cost;
           var adjacentHexes = findAdjacentHexes(globals.hexSelected.q, globals.hexSelected.r, grid);
           // Try to find a path.
           //var path =  new Path(globals.hexSelected, hexClicked, adjacentHexes, grid);
@@ -233,10 +246,11 @@
     if(globals.hexSelected) {
       var gameCoord = globals.gameCamera.antiTransform(globals.cursorX, globals.cursorY);
       var mouseOverHex = pixelToHex(gameCoord.x, gameCoord.y, globals.HEXSIZE);
+      var currentHex = grid[mouseOverHex.q + globals.QDIM][mouseOverHex.r + globals.RDIM];
       if(Math.abs(mouseOverHex.q) <= globals.QDIM    // Case inside grid
         && Math.abs(mouseOverHex.r) <= globals.RDIM 
-        && Math.abs(mouseOverHex.q + mouseOverHex.r) <= globals.QDIM) {
-        var currentHex = grid[mouseOverHex.q + globals.QDIM][mouseOverHex.r + globals.RDIM];
+        && Math.abs(mouseOverHex.q + mouseOverHex.r) <= globals.QDIM
+        && globals.player.moves >= currentHex.cost) {
         currentHex.drawPath(ctx, camera);
       }
     }

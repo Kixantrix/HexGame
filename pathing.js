@@ -226,9 +226,8 @@ function canMoveTo(begin, newPosition, adjacentHexes, grid) {
       )) {
       return false;
     }
-    return true;
-
   }
+  return true;
 }
 
 module.exports = {

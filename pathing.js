@@ -219,7 +219,7 @@ function canMoveTo(begin, newPosition, adjacentHexes, grid) {
   var color = grid[begin.q][begin.r].color;
   for(let item of adjacentHexes) {
     // Check space exists and is open
-    var positionExamined = globals.hexFactory.make(item.q + qDisplacement, item.r + rDisplacement);
+    var positionExamined = globals.hexFactory.make(item.q - qDisplacement, item.r - rDisplacement);
     if(!(grid[positionExamined.q] && grid[positionExamined.q][positionExamined.r]
       && ((grid[positionExamined.q][positionExamined.r].color == "white")
       || adjacentHexes.has(positionExamined))

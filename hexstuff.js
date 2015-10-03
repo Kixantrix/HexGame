@@ -119,11 +119,15 @@
 
     // Updates the total number of moves of the player
     function updateMoves(player) {
-      player.moves += Math.log(player.numHexes + 1) / 30;
+      if (player.moves < 200) {
+        player.moves += Math.log(player.numHexes + 1) / 30;
+      }
     }
 
     function updateUnitsToPlace(player) {
-      player.unitsToPlace += Math.log(player.numHexes + 1) / 30;
+      if (player.unitsToPlace < 20) {
+        player.unitsToPlace += Math.log(player.numHexes + 1) / 30;
+      }
     }
 
     // Draw things

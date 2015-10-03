@@ -78,7 +78,7 @@ function Hex(centerQ, centerR, size) {
 
   // Recursively drars of hex if tail exists
   Hex.prototype.drawPath = function(ctx, camera) {
-    if(this.tail) {
+    if(this.tail && this.cost < globals.player.moves) {
       ctx.lineWidth = "10";
       ctx.strokeStyle = "black";
       ctx.fillStyle = "black";

@@ -246,11 +246,11 @@
     if(globals.hexSelected) {
       var gameCoord = globals.gameCamera.antiTransform(globals.cursorX, globals.cursorY);
       var mouseOverHex = pixelToHex(gameCoord.x, gameCoord.y, globals.HEXSIZE);
-      var currentHex = grid[mouseOverHex.q + globals.QDIM][mouseOverHex.r + globals.RDIM];
+      
       if(Math.abs(mouseOverHex.q) <= globals.QDIM    // Case inside grid
         && Math.abs(mouseOverHex.r) <= globals.RDIM 
-        && Math.abs(mouseOverHex.q + mouseOverHex.r) <= globals.QDIM
-        && globals.player.moves >= currentHex.cost) {
+        && Math.abs(mouseOverHex.q + mouseOverHex.r) <= globals.QDIM) {
+        var currentHex = grid[mouseOverHex.q + globals.QDIM][mouseOverHex.r + globals.RDIM];
         currentHex.drawPath(ctx, camera);
       }
     }
